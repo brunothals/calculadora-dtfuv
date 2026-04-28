@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora DTF UV</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222222;
+    --border: #2e2e2e;
+    --border2: #3a3a3a;
+    --accent: #c8ff00;
+    --accent2: #00d4aa;
+    --text: #f0f0f0;
+    --text2: #888;
+    --text3: #555;
+    --danger: #ff4d4d;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 20px; height: 20px; }
+
+  header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--text);
+  }
+  header span {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    margin-left: auto;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+  label {
+    font-size: 12px;
+    color: var(--text2);
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  input, select {
+    width: 100%;
+    height: 42px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    padding: 0 14px;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  input::placeholder { color: var(--text3); }
+  input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { opacity: .4; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    flex: 1;
+    height: 36px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 13px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+  .tab:not(.active):hover { color: var(--text); }
+
+  .btn-calc {
+    width: 100%;
+    height: 52px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: #000;
+    font-size: 15px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: -.01em;
+    transition: opacity .15s, transform .1s;
+    margin-bottom: 20px;
+  }
+  .btn-calc:hover { opacity: .9; }
+  .btn-calc:active { transform: scale(.99); }
+
+  .btn-add {
+    height: 38px;
+    padding: 0 16px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--accent2);
+    font-size: 13px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s;
+    margin-top: 8px;
+  }
+  .btn-add:hover { border-color: var(--accent2); }
+
+  .art-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 10px;
+  }
+  .rm-btn {
+    width: 42px; height: 42px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text3);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, color .15s;
+    flex-shrink: 0;
+  }
+  .rm-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-value.accent { color: var(--accent); }
+  .stat-unit {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .canvas-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .canvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  canvas {
+    display: block;
+    border-radius: 8px;
+    max-width: 100%;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .leg-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.6;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 16px;
+  }
+
+  #result { display: none; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  .folha-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent2);
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .container { padding: 20px 16px; }
+    .g2, .g3 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat-value { font-size: 22px; }
+    .art-row { grid-template-columns: 1fr 1fr auto; }
+    .art-row .qty-wrap { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#000"/>
+      <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#000"/>
+      <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#000"/>
+      <rect x="11" y="11" width="3" height="3" rx="1" fill="#000"/>
+      <rect x="15" y="11" width="3" height="3" rx="1" fill="#000"/>
+      <rect x="11" y="15" width="3" height="3" rx="1" fill="#000"/>
+      <rect x="15" y="15" width="3" height="3" rx="1" fill="#000"/>
+    </svg>
+  </div>
+  <h1>Calculadora DTF UV</h1>
+  <span>v1.0</span>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <p class="card-title">Configuração da folha</p>
+    <div class="g2">
+      <div>
+        <label>Tamanho da folha</label>
+        <select id="folha-sel" onchange="onFolhaSel()">
+          <option value="29x21">29 × 21 cm</option>
+          <option value="29x42">29 × 42 cm</option>
+          <option value="29x50">29 × 50 cm</option>
+          <option value="29x100">29 × 100 cm</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div>
+        <label>Espaçamento entre artes (cm)</label>
+        <input type="number" id="esp" value="0.3" step="0.1" min="0" max="5">
+      </div>
+    </div>
+    <div id="custom-wrap" style="display:none;margin-top:14px" class="g2">
+      <div><label>Largura da folha (cm)</label><input type="number" id="fw" value="29" min="1"></div>
+      <div><label>Comprimento da folha (cm)</label><input type="number" id="fh" value="60" min="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">Modo de cálculo</p>
+    <div class="tabs">
+      <button class="tab active" id="tab-fill" onclick="setMode('fill')">Preencher folha</button>
+      <button class="tab" id="tab-multi" onclick="setMode('multi')">Múltiplas artes</button>
+    </div>
+
+    <div id="mode-fill">
+      <p class="hint">Informe a medida de uma arte e a calculadora preenche toda a folha automaticamente.</p>
+      <div class="g2">
+        <div><label>Largura da arte (cm)</label><input type="number" id="fill-w" value="10" step="0.1" min="0.1"></div>
+        <div><label>Altura da arte (cm)</label><input type="number" id="fill-h" value="8" step="0.1" min="0.1"></div>
+      </div>
+    </div>
+
+    <div id="mode-multi" style="display:none">
+      <p class="hint">Adicione artes de tamanhos e quantidades diferentes para encaixar na mesma folha.</p>
+      <div id="arts-list"></div>
+      <button class="btn-add" onclick="addArt()">+ Adicionar arte</button>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcular()">Calcular encaixe</button>
+
+  <div id="result">
+    <div class="stats" id="stats"></div>
+    <div class="canvas-wrap">
+      <div class="canvas-header">
+        <p class="card-title" style="margin:0">Visualização da folha</p>
+        <div id="folha-badge" class="folha-badge"></div>
+      </div>
+      <canvas id="canvas"></canvas>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const COLORS = [
+  '#c8ff00','#00d4aa','#ff6b35','#a78bfa','#fb923c',
+  '#34d399','#f472b6','#60a5fa','#facc15','#f87171'
+];
+
+let artCount = 0;
+let currentMode = 'fill';
+
+function setMode(m) {
+  currentMode = m;
+  document.getElementById('tab-fill').className = 'tab' + (m === 'fill' ? ' active' : '');
+  document.getElementById('tab-multi').className = 'tab' + (m === 'multi' ? ' active' : '');
+  document.getElementById('mode-fill').style.display = m === 'fill' ? 'block' : 'none';
+  document.getElementById('mode-multi').style.display = m === 'multi' ? 'block' : 'none';
+  document.getElementById('result').style.display = 'none';
+}
+
+function addArt(w = '', h = '', qty = '') {
+  artCount++;
+  const id = artCount;
+  const d = document.createElement('div');
+  d.className = 'art-row';
+  d.id = 'art-' + id;
+  d.innerHTML = `
+    <div><label>Largura (cm)</label><input type="number" id="aw${id}" value="${w}" placeholder="ex: 10" min="0.1" step="0.1"></div>
+    <div><label>Altura (cm)</label><input type="number" id="ah${id}" value="${h}" placeholder="ex: 8" min="0.1" step="0.1"></div>
+    <div class="qty-wrap"><label>Quantidade</label><input type="number" id="aq${id}" value="${qty}" placeholder="ex: 5" min="1" step="1"></div>
+    <button class="rm-btn" onclick="document.getElementById('art-${id}').remove()" title="Remover">×</button>
+  `;
+  document.getElementById('arts-list').appendChild(d);
+}
+
+function onFolhaSel() {
+  const v = document.getElementById('folha-sel').value;
+  document.getElementById('custom-wrap').style.display = v === 'custom' ? 'grid' : 'none';
+}
+
+function getFolha() {
+  const v = document.getElementById('folha-sel').value;
+  if (v === 'custom') {
+    return { w: parseFloat(document.getElementById('fw').value) || 29, h: parseFloat(document.getElementById('fh').value) || 60 };
+  }
+  const [a, b] = v.split('x').map(Number);
+  return { w: a, h: b };
+}
+
+function packArts(toPlace, fw, fh, esp) {
+  const sorted = [...toPlace].sort((a, b) => (b.h - a.h) || (b.w - a.w));
+  const rows = [];
+  const placed = [];
+  for (const item of sorted) {
+    let found = false;
+    for (const row of rows) {
+      const nx = row.usedX + (row.usedX > 0 ? esp : 0);
+      if (nx + item.w <= fw + 0.001 && item.h <= row.rowH + 0.001) {
+        placed.push({ x: nx, y: row.y, w: item.w, h: item.h, idx: item.idx });
+        row.usedX = nx + item.w;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      const newY = rows.length > 0 ? rows[rows.length - 1].y + rows[rows.length - 1].rowH + esp : 0;
+      if (newY + item.h <= fh + 0.001 && item.w <= fw + 0.001) {
+        rows.push({ y: newY, rowH: item.h, usedX: item.w });
+        placed.push({ x: 0, y: newY, w: item.w, h: item.h, idx: item.idx });
+        found = true;
+      }
+    }
+  }
+  return placed;
+}
+
+function calcular() {
+  const folha = getFolha();
+  const esp = parseFloat(document.getElementById('esp').value) || 0.3;
+  let arts = [];
+  let toPlace = [];
+
+  if (currentMode === 'fill') {
+    const aw = parseFloat(document.getElementById('fill-w').value);
+    const ah = parseFloat(document.getElementById('fill-h').value);
+    if (!aw || !ah) { alert('Informe as medidas da arte.'); return; }
+    if (aw > folha.w || ah > folha.h) { alert(`Arte ${aw}×${ah}cm não cabe na folha ${folha.w}×${folha.h}cm.`); return; }
+    arts = [{ w: aw, h: ah, idx: 0 }];
+    const cols = Math.floor((folha.w + esp) / (aw + esp));
+    const rowsN = Math.floor((folha.h + esp) / (ah + esp));
+    const total = cols * rowsN;
+    for (let i = 0; i < total; i++) toPlace.push({ w: aw, h: ah, idx: 0 });
+  } else {
+    const rows = document.querySelectorAll('#arts-list .art-row');
+    if (!rows.length) { alert('Adicione ao menos uma arte.'); return; }
+    rows.forEach((r, i) => {
+      const id = r.id.replace('art-', '');
+      const w = parseFloat(document.getElementById('aw' + id).value);
+      const h = parseFloat(document.getElementById('ah' + id).value);
+      const qty = parseInt(document.getElementById('aq' + id).value) || 1;
+      if (w > 0 && h > 0) {
+        arts.push({ w, h, idx: i });
+        for (let j = 0; j < qty; j++) toPlace.push({ w, h, idx: i });
+      }
+    });
+    if (!arts.length) { alert('Preencha as medidas das artes.'); return; }
+    for (const a of arts) {
+      if (a.w > folha.w || a.h > folha.h) { alert(`Arte ${a.w}×${a.h}cm não cabe na folha.`); return; }
+    }
+  }
+
+  const placed = packArts(toPlace, folha.w, folha.h, esp);
+  const artArea = placed.reduce((s, p) => s + p.w * p.h, 0);
+  const folhaArea = folha.w * folha.h;
+  const aprov = Math.round(artArea / folhaArea * 100);
+  const counts = {};
+  placed.forEach(p => { counts[p.idx] = (counts[p.idx] || 0) + 1; });
+
+  const cols = currentMode === 'fill' ? Math.floor((folha.w + esp) / (arts[0].w + esp)) : null;
+  const rowsN = currentMode === 'fill' ? Math.floor((folha.h + esp) / (arts[0].h + esp)) : null;
+
+  // Draw canvas
+  const canvas = document.getElementById('canvas');
+  const maxW = Math.min(820, window.innerWidth - 80);
+  const scale = Math.min(maxW / folha.w, 500 / folha.h);
+  canvas.width = Math.round(folha.w * scale);
+  canvas.height = Math.round(folha.h * scale);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#141414';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  ctx.lineWidth = 0.5;
+  const gridStep = scale * 5;
+  for (let x = 0; x <= canvas.width; x += gridStep) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+  for (let y = 0; y <= canvas.height; y += gridStep) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+  placed.forEach(p => {
+    const c = COLORS[p.idx % COLORS.length];
+    const px = Math.round(p.x * scale), py = Math.round(p.y * scale);
+    const pw = Math.round(p.w * scale), ph = Math.round(p.h * scale);
+
+    // Fill
+    ctx.fillStyle = c + '20';
+    ctx.fillRect(px, py, pw, ph);
+
+    // Border
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(px + 0.75, py + 0.75, pw - 1.5, ph - 1.5);
+
+    // Label
+    if (pw > 22 && ph > 14) {
+      ctx.fillStyle = c;
+      const fs = Math.max(9, Math.min(12, Math.round(Math.min(pw, ph) / 5)));
+      ctx.font = `500 ${fs}px 'DM Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${p.w}×${p.h}`, px + pw / 2, py + ph / 2);
+    }
+  });
+
+  // Outer border
+  ctx.strokeStyle = 'rgba(255,255,255,.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, canvas.width - 1, canvas.height - 1);
+
+  // Badge
+  document.getElementById('folha-badge').textContent = `${folha.w} × ${folha.h} cm`;
+
+  // Legend
+  const leg = document.getElementById('legend');
+  leg.innerHTML = '';
+  arts.forEach((a, i) => {
+    const c = COLORS[i % COLORS.length];
+    const cp = counts[i] || 0;
+    const req = currentMode === 'fill' ? cp : toPlace.filter(t => t.idx === i).length;
+    const d = document.createElement('div');
+    d.className = 'leg-item';
+    d.innerHTML = `<div class="leg-dot" style="background:${c}40;border:1.5px solid ${c}"></div>${a.w}×${a.h}cm — ${cp}${currentMode !== 'fill' ? '/' + req : ''} encaixadas`;
+    leg.appendChild(d);
+  });
+
+  // Stats
+  document.getElementById('stats').innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Total encaixado</div>
+      <div class="stat-value accent">${placed.length}</div>
+      <div class="stat-unit">artes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Aproveitamento</div>
+      <div class="stat-value">${aprov}<span style="font-size:16px;color:var(--text2)">%</span></div>
+      <div class="stat-unit">da folha</div>
+    </div>
+    ${currentMode === 'fill' ? `
+    <div class="stat">
+      <div class="stat-label">Colunas × Linhas</div>
+      <div class="stat-value" style="font-size:20px">${cols} × ${rowsN}</div>
+      <div class="stat-unit">distribuição</div>
+    </div>` : `
+    <div class="stat">
+      <div class="stat-label">Solicitadas</div>
+      <div class="stat-value">${toPlace.length}</div>
+      <div class="stat-unit">artes</div>
+    </div>`}
+    <div class="stat">
+      <div class="stat-label">Espaçamento</div>
+      <div class="stat-value" style="font-size:20px">${esp.toFixed(1)}</div>
+      <div class="stat-unit">cm entre artes</div>
+    </div>
+  `;
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Init
+addArt(10, 8, 4);
+</script>
+</body>
+</html>
